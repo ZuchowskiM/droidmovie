@@ -1,8 +1,9 @@
 package com.mzuch.droidmovie.data.movies.model
 
 import com.google.gson.annotations.SerializedName
+import com.mzuch.droidmovie.utils.Equatable
 
-class Results {
+class Results : Equatable {
 
     @SerializedName("adult")
     var adult: Boolean? = null
@@ -45,4 +46,9 @@ class Results {
 
     @SerializedName("vote_count")
     var voteCount: Int? = null
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is Results) return false
+        return title == other.title
+    }
 }
