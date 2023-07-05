@@ -3,6 +3,7 @@ package com.mzuch.droidmovie
 import com.mzuch.droidmovie.data.movies.repository.MovieRepo
 import com.mzuch.droidmovie.data.movies.repository.MovieDataSource
 import com.mzuch.droidmovie.data.movies.repository.remote.MovieRemote
+import com.mzuch.droidmovie.network.AuthInterceptor
 import com.mzuch.droidmovie.network.MovieApi
 import com.mzuch.droidmovie.network.NetworkResponseAdapterFactory
 import dagger.Module
@@ -26,10 +27,12 @@ object AppModule {
     fun provideWildfireApi(): MovieApi {
         val loggingInterceptor = HttpLoggingInterceptor()
             .setLevel(HttpLoggingInterceptor.Level.BODY)
+        val authInterceptor = AuthInterceptor()
         val httpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
+            .addInterceptor(authInterceptor)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
         val retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
             .addCallAdapterFactory(NetworkResponseAdapterFactory())
