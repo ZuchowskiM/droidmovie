@@ -6,5 +6,5 @@ import retrofit2.http.GET
 interface MovieApi {
 
     @GET("movie/now_playing")
-    suspend fun getProjectData() : GenericResponse<MoviesData>
+    suspend fun getMoviesData() : GenericResponse<MoviesData>
 }
