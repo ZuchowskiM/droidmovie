@@ -20,7 +20,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    private const val baseUrl = "https://api.themoviedb.org/3"
+    private const val baseUrl = "https://api.themoviedb.org/3/"
 
     @Provides
     @Singleton
