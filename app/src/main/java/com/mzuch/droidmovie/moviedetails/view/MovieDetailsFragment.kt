@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
+import coil.load
 import com.mzuch.droidmovie.databinding.FragmentMovieDetailsBinding
 
 class MovieDetailsFragment : Fragment() {
@@ -34,10 +35,17 @@ class MovieDetailsFragment : Fragment() {
 
     private fun setupView() {
         binding.run {
+            posterIv.load("$postersUrl${args.movieDetailsArgs.posterPath}") {
+                error(com.google.android.material.R.drawable.mtrl_ic_error)
+            }
             movieTitleTv.text = args.movieDetailsArgs.title
             releaseDateTv.text = args.movieDetailsArgs.releaseDate
             scoreTv.text = args.movieDetailsArgs.score
             overviewTv.text = args.movieDetailsArgs.overview
         }
+    }
+
+    private companion object {
+        const val postersUrl = "https://image.tmdb.org/t/p/original"
     }
 }
