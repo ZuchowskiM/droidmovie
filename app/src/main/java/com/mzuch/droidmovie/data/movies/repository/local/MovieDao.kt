@@ -12,5 +12,8 @@ interface MovieDao {
     fun getAll(): Flow<List<MovieEntity>>
 
     @Insert
-    fun insertAll(vararg movies: MovieEntity)
+    suspend fun insertAll(vararg movies: MovieEntity)
+
+    @Query("DELETE FROM MovieEntity")
+    suspend fun deleteAll()
 }

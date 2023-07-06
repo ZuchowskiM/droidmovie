@@ -4,6 +4,7 @@ import com.mzuch.droidmovie.data.movies.model.MovieEntity
 import kotlinx.coroutines.flow.Flow
 
 interface MovieLocalSource {
-    fun insertAll(movies: List<MovieEntity>)
-    fun getAll(): Flow<List<MovieEntity>>
+    suspend fun insertAll(movies: List<MovieEntity>)
+    suspend fun getAll(): Flow<List<MovieEntity>>
+    suspend fun deleteAll()
 }

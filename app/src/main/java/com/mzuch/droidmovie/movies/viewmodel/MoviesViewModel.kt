@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.mzuch.droidmovie.data.movies.repository.MovieDataSource
 import com.mzuch.droidmovie.movies.intent.MoviesIntent
 import com.mzuch.droidmovie.movies.viewstate.MoviesState
-import com.mzuch.droidmovie.network.NetworkResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +22,7 @@ class MoviesViewModel @Inject constructor(
 
     init {
         handleIntent()
+        listenToMovies()
     }
 
     private fun handleIntent() {
@@ -35,16 +35,17 @@ class MoviesViewModel @Inject constructor(
         }
     }
 
+    private fun listenToMovies() {
+        viewModelScope.launch {
+            movieRepo.getLiveMoviesData().collect {
+                moviesState.value = MoviesState.Success(it)
+            }
+        }
+    }
+
     private fun fetchData() {
         viewModelScope.launch {
-            moviesState.value = MoviesState.Loading
-            when (val response = movieRepo.getMoviesData()) {
-                is NetworkResponse.ApiError -> moviesState.value = MoviesState.Error
-                is NetworkResponse.NetworkError -> moviesState.value = MoviesState.Error
-                is NetworkResponse.Success -> moviesState.value =
-                    MoviesState.Success(response.body.results)
-                is NetworkResponse.UnknownError -> moviesState.value = MoviesState.Error
-            }
+            movieRepo.loadMoviesData()
         }
     }
 }

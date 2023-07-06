@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.mzuch.droidmovie.data.database.AppDatabase
 import com.mzuch.droidmovie.data.movies.repository.MovieRepo
 import com.mzuch.droidmovie.data.movies.repository.MovieDataSource
+import com.mzuch.droidmovie.data.movies.repository.local.MovieLocal
 import com.mzuch.droidmovie.data.movies.repository.remote.MovieRemote
 import com.mzuch.droidmovie.network.AuthInterceptor
 import com.mzuch.droidmovie.network.MovieApi
@@ -49,9 +50,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMoviesRepository(api: MovieApi): MovieDataSource {
+    fun provideMoviesRepository(api: MovieApi, db: AppDatabase): MovieDataSource {
         val remote = MovieRemote(api)
-        return MovieRepo(remote)
+        val local = MovieLocal(db)
+        return MovieRepo(remote, local)
     }
 
     @Provides
