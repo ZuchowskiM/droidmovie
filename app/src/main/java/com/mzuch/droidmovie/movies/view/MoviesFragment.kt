@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.mzuch.droidmovie.databinding.FragmentMoviesBinding
 import com.mzuch.droidmovie.movies.intent.MoviesIntent
 import com.mzuch.droidmovie.movies.viewmodel.MoviesViewModel
@@ -19,7 +20,11 @@ class MoviesFragment : Fragment() {
     private var _binding: FragmentMoviesBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MoviesViewModel by viewModels()
-    private val adapter = MovieAdapter()
+    private val adapter =
+        MovieAdapter {
+            val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailsFragment(it)
+            findNavController().navigate(action)
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,9 +51,9 @@ class MoviesFragment : Fragment() {
         lifecycleScope.launch {
             viewModel.moviesState.collect {
                 when (it) {
-                    MoviesState.Error -> { }
-                    MoviesState.Idle -> { }
-                    MoviesState.Loading -> { }
+                    MoviesState.Error -> {}
+                    MoviesState.Idle -> {}
+                    MoviesState.Loading -> {}
                     is MoviesState.Success -> {
                         adapter.submitList(it.data)
                     }

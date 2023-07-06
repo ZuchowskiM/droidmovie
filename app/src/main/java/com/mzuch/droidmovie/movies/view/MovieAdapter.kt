@@ -5,13 +5,16 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.mzuch.droidmovie.data.movies.model.Results
 import com.mzuch.droidmovie.databinding.ItemMovieBinding
+import com.mzuch.droidmovie.moviedetails.view.MovieDetailsArgsData
 import com.mzuch.droidmovie.utils.getDiffCallback
 
-class MovieAdapter : ListAdapter<Results, MovieViewHolder>(diffCallback) {
+class MovieAdapter(private val onClick: (MovieDetailsArgsData) -> Unit) :
+    ListAdapter<Results, MovieViewHolder>(diffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
-        val binding = ItemMovieBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MovieViewHolder(binding)
+        val binding =
+            ItemMovieBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MovieViewHolder(binding, onClick)
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
