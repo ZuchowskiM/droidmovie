@@ -49,6 +49,8 @@ class MovieDetailsFragment : Fragment() {
             tbMovieDetails.ibtnBack.setOnClickListener {
                 findNavController().popBackStack()
             }
+            tbMovieDetails.btnFavorite.isVisible = true
+            tbMovieDetails.btnFavorite.isChecked = args.movieDetailsArgs.isFavorite
         }
     }
 

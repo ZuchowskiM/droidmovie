@@ -20,7 +20,8 @@ class MovieViewHolder(
                 movie.title,
                 movie.releaseDate,
                 movie.score.toString(),
-                movie.overview
+                movie.overview,
+                movie.isFavorite,
             )
             onClick(args)
         }

@@ -10,4 +10,5 @@ class MovieDetailsArgsData(
     val releaseDate: String,
     val score: String,
     val overview: String,
+    val isFavorite: Boolean,
 ) : Parcelable
