@@ -2,13 +2,12 @@ package com.mzuch.droidmovie.data.movies.repository
 
 import com.mzuch.droidmovie.data.model.RepositoryResult
 import com.mzuch.droidmovie.data.movies.model.MovieEntity
+import com.mzuch.droidmovie.data.movies.model.MovieUpdateEntity
 import com.mzuch.droidmovie.data.movies.model.MoviesData
 import com.mzuch.droidmovie.data.movies.repository.local.MovieLocalSource
 import com.mzuch.droidmovie.data.movies.repository.remote.MovieRemoteSource
-import com.mzuch.droidmovie.network.GenericResponse
 import com.mzuch.droidmovie.network.NetworkResponse
 import kotlinx.coroutines.flow.Flow
-import java.util.UUID
 
 class MovieRepo(private val remote: MovieRemoteSource, private val local: MovieLocalSource) :
     MovieDataSource {
@@ -19,8 +18,8 @@ class MovieRepo(private val remote: MovieRemoteSource, private val local: MovieL
             is NetworkResponse.NetworkError -> return RepositoryResult.Error()
             is NetworkResponse.Success -> {
                 val movieResults = result.body.results.map {
-                    MovieEntity(
-                        UUID.randomUUID().toString(),
+                    MovieUpdateEntity(
+                        it.id,
                         it.title.orEmpty(),
                         it.posterPath,
                         it.releaseDate.orEmpty(),
@@ -28,7 +27,6 @@ class MovieRepo(private val remote: MovieRemoteSource, private val local: MovieL
                         it.overview.orEmpty(),
                     )
                 }
-                local.deleteAll()
                 local.insertAll(movieResults)
                 return RepositoryResult.Success(result.body)
             }
@@ -38,5 +36,21 @@ class MovieRepo(private val remote: MovieRemoteSource, private val local: MovieL
 
     override suspend fun getLiveMoviesData(): Flow<List<MovieEntity>> {
         return local.getAll()
+    }
+
+    override suspend fun markFavorite(movieUid: Int) {
+        val movieEntity = local.getMovie(movieUid)
+        val updatedMovie = movieEntity.copy(
+            isFavorite = true
+        )
+        local.updateMovie(updatedMovie)
+    }
+
+    override suspend fun unMarkFavorite(movieUid: Int) {
+        val movieEntity = local.getMovie(movieUid)
+        val updatedMovie = movieEntity.copy(
+            isFavorite = false
+        )
+        local.updateMovie(updatedMovie)
     }
 }

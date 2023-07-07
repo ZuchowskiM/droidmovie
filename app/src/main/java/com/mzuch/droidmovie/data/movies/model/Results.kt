@@ -3,7 +3,10 @@ package com.mzuch.droidmovie.data.movies.model
 import com.google.gson.annotations.SerializedName
 import com.mzuch.droidmovie.utils.Equatable
 
-class Results : Equatable {
+class Results(
+    @SerializedName("id")
+    val id: Int
+) : Equatable {
 
     @SerializedName("adult")
     var adult: Boolean? = null
@@ -13,9 +16,6 @@ class Results : Equatable {
 
     @SerializedName("genre_ids")
     var genreIds: ArrayList<Int> = arrayListOf()
-
-    @SerializedName("id")
-    var id: Int? = null
 
     @SerializedName("original_language")
     var originalLanguage: String? = null

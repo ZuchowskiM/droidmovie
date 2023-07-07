@@ -30,8 +30,22 @@ class MoviesViewModel @Inject constructor(
             moviesIntent.consumeAsFlow().collect {
                 when (it) {
                     is MoviesIntent.FetchData -> fetchData()
+                    is MoviesIntent.MarkAsFavorite -> markAsFavorite(it.movieUid)
+                    is MoviesIntent.UnMarkAsFavorite -> unMarkAsFavorite(it.movieUid)
                 }
             }
+        }
+    }
+
+    private fun markAsFavorite(movieUid: Int) {
+        viewModelScope.launch {
+            movieRepo.markFavorite(movieUid)
+        }
+    }
+
+    private fun unMarkAsFavorite(movieUid: Int) {
+        viewModelScope.launch {
+            movieRepo.unMarkFavorite(movieUid)
         }
     }
 

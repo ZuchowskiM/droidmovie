@@ -8,13 +8,17 @@ import com.mzuch.droidmovie.data.movies.model.MovieEntity
 import com.mzuch.droidmovie.databinding.ItemMovieBinding
 import com.mzuch.droidmovie.moviedetails.view.MovieDetailsArgsData
 
-class MovieAdapter(private val onClick: (MovieDetailsArgsData) -> Unit) :
+class MovieAdapter(
+    private val onClick: (MovieDetailsArgsData) -> Unit,
+    private val markFavorite: (Int) -> Unit,
+    private val unMarkFavorite: (Int) -> Unit
+) :
     ListAdapter<MovieEntity, MovieViewHolder>(diffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
         val binding =
             ItemMovieBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MovieViewHolder(binding, onClick)
+        return MovieViewHolder(binding, onClick, markFavorite, unMarkFavorite)
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {

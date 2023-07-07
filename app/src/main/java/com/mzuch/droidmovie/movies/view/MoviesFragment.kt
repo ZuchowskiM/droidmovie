@@ -21,10 +21,22 @@ class MoviesFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: MoviesViewModel by viewModels()
     private val adapter =
-        MovieAdapter {
-            val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailsFragment(it)
-            findNavController().navigate(action)
-        }
+        MovieAdapter(
+            onClick = {
+                val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailsFragment(it)
+                findNavController().navigate(action)
+            },
+            markFavorite = {
+                lifecycleScope.launch {
+                    viewModel.moviesIntent.send(MoviesIntent.MarkAsFavorite(it))
+                }
+            },
+            unMarkFavorite = {
+                lifecycleScope.launch {
+                    viewModel.moviesIntent.send(MoviesIntent.UnMarkAsFavorite(it))
+                }
+            }
+        )
 
     override fun onCreateView(
         inflater: LayoutInflater,
