@@ -54,9 +54,14 @@ class MoviesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupToolbar()
         observeViewModel()
         setupMovieList()
         fetchMovies()
+    }
+
+    private fun setupToolbar() {
+        binding.tbMovieList.tvToolbarTitle.text = "Movies"
     }
 
     private fun observeViewModel() {
