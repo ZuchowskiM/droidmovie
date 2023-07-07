@@ -2,7 +2,7 @@ package com.mzuch.droidmovie.data.movies.repository
 
 import com.mzuch.droidmovie.data.model.RepositoryResult
 import com.mzuch.droidmovie.data.movies.model.MovieEntity
-import com.mzuch.droidmovie.data.movies.model.MovieUpdateEntity
+import com.mzuch.droidmovie.data.movies.model.MovieUpdateFavoriteEntity
 import com.mzuch.droidmovie.data.movies.model.MoviesData
 import com.mzuch.droidmovie.data.movies.repository.local.MovieLocalSource
 import com.mzuch.droidmovie.data.movies.repository.remote.MovieRemoteSource
@@ -18,7 +18,7 @@ class MovieRepo(private val remote: MovieRemoteSource, private val local: MovieL
             is NetworkResponse.NetworkError -> return RepositoryResult.Error()
             is NetworkResponse.Success -> {
                 val movieResults = result.body.results.map {
-                    MovieUpdateEntity(
+                    MovieEntity(
                         it.id,
                         it.title.orEmpty(),
                         it.posterPath,
@@ -27,7 +27,15 @@ class MovieRepo(private val remote: MovieRemoteSource, private val local: MovieL
                         it.overview.orEmpty(),
                     )
                 }
+                val favoriteDataMovies = local.getAllFavorites().map {
+                    MovieUpdateFavoriteEntity(
+                        it.uid,
+                        it.isFavorite
+                    )
+                }
+                local.deleteAll()
                 local.insertAll(movieResults)
+                local.updateFavoritesAll(favoriteDataMovies)
                 return RepositoryResult.Success(result.body)
             }
             is NetworkResponse.UnknownError -> return RepositoryResult.Error()
