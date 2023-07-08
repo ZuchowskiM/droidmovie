@@ -16,6 +16,7 @@ class MovieViewHolder(
         binding.titleTv.text = movie.title
         binding.root.setOnClickListener {
             val args = MovieDetailsArgsData(
+                movie.uid,
                 movie.posterPath ?: "",
                 movie.title,
                 movie.releaseDate,
@@ -27,7 +28,7 @@ class MovieViewHolder(
         }
         binding.btnFavorite.isChecked = movie.isFavorite
         binding.btnFavorite.setOnClickListener {
-            when(movie.isFavorite) {
+            when (movie.isFavorite) {
                 true -> unMarkFavorite(movie.uid)
                 false -> markFavorite(movie.uid)
             }
