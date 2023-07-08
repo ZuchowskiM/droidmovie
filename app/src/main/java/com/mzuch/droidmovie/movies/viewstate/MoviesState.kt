@@ -4,7 +4,6 @@ import com.mzuch.droidmovie.data.movies.model.MovieEntity
 
 sealed class MoviesState {
     object Idle : MoviesState()
-    object Loading : MoviesState()
     object Error : MoviesState()
     data class Success(val data: List<MovieEntity>) : MoviesState()
 }

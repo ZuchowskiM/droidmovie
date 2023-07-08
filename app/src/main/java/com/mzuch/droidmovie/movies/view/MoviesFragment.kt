@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.mzuch.droidmovie.databinding.FragmentMoviesBinding
 import com.mzuch.droidmovie.movies.intent.MoviesIntent
@@ -55,8 +57,9 @@ class MoviesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupToolbar()
-        observeViewModel()
         setupMovieList()
+        setupSwipeToRefreshLayout()
+        observeViewModel()
         fetchMovies()
     }
 
@@ -66,26 +69,43 @@ class MoviesFragment : Fragment() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
-            viewModel.moviesState.collect {
-                when (it) {
-                    MoviesState.Error -> {}
-                    MoviesState.Idle -> {}
-                    MoviesState.Loading -> {}
-                    is MoviesState.Success -> {
-                        adapter.submitList(it.data)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.moviesState.collect {
+                    when (it) {
+                        is MoviesState.Error -> {
+                            binding.stfLayMovies.isRefreshing = false
+                        }
+                        is MoviesState.Idle -> {}
+                        is MoviesState.Success -> {
+                            adapter.submitList(it.data)
+                            binding.stfLayMovies.isRefreshing = false
+                        }
                     }
                 }
             }
         }
     }
 
-    private fun fetchMovies() {
-        lifecycleScope.launch {
-            viewModel.moviesIntent.send(MoviesIntent.FetchData)
+    private fun setupMovieList() {
+        binding.moviesRv.adapter = adapter
+    }
+
+    private fun setupSwipeToRefreshLayout() {
+        binding.stfLayMovies.setOnRefreshListener {
+            onMoviesRefresh()
         }
     }
 
-    private fun setupMovieList() {
-        binding.moviesRv.adapter = adapter
+    private fun fetchMovies() {
+        binding.stfLayMovies.post {
+            binding.stfLayMovies.isRefreshing = true
+            onMoviesRefresh()
+        }
+    }
+
+    private fun onMoviesRefresh() {
+        lifecycleScope.launch {
+            viewModel.moviesIntent.send(MoviesIntent.FetchData)
+        }
     }
 }

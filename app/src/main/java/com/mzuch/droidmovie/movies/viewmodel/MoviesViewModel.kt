@@ -2,6 +2,7 @@ package com.mzuch.droidmovie.movies.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mzuch.droidmovie.data.model.RepositoryResult
 import com.mzuch.droidmovie.data.movies.repository.MovieDataSource
 import com.mzuch.droidmovie.movies.intent.MoviesIntent
 import com.mzuch.droidmovie.movies.viewstate.MoviesState
@@ -59,7 +60,13 @@ class MoviesViewModel @Inject constructor(
 
     private fun fetchData() {
         viewModelScope.launch {
-            movieRepo.loadMoviesData()
+            when (movieRepo.loadMoviesData()) {
+                is RepositoryResult.Error -> {
+                    moviesState.value = MoviesState.Error
+                    moviesState.value = MoviesState.Idle
+                }
+                is RepositoryResult.Success -> {}
+            }
         }
     }
 }
