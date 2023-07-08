@@ -1,19 +1,19 @@
 package com.mzuch.droidmovie.moviedetails.view
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
 import com.mzuch.droidmovie.databinding.FragmentMovieDetailsBinding
-import com.mzuch.droidmovie.moviedetails.intent.MovieDetailsIntent
-import com.mzuch.droidmovie.moviedetails.viewmodel.MovieDetailsViewModel
+import com.mzuch.droidmovie.movies.intent.MoviesIntent
+import com.mzuch.droidmovie.movies.viewmodel.MoviesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -22,7 +22,7 @@ class MovieDetailsFragment : Fragment() {
     private var _binding: FragmentMovieDetailsBinding? = null
     private val binding get() = _binding!!
     private val args: MovieDetailsFragmentArgs by navArgs()
-    private val viewModel: MovieDetailsViewModel by viewModels()
+    private val viewModel: MoviesViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,14 +75,14 @@ class MovieDetailsFragment : Fragment() {
                 if (isChecked) {
                     lifecycleScope.launch {
                         viewModel
-                            .moviesDetailsIntent
-                            .send(MovieDetailsIntent.MarkAsFavorite(args.movieDetailsArgs.uid))
+                            .moviesIntent
+                            .send(MoviesIntent.MarkAsFavorite(args.movieDetailsArgs.uid))
                     }
                 } else {
                     lifecycleScope.launch {
                         viewModel
-                            .moviesDetailsIntent
-                            .send(MovieDetailsIntent.UnMarkAsFavorite(args.movieDetailsArgs.uid))
+                            .moviesIntent
+                            .send(MoviesIntent.UnMarkAsFavorite(args.movieDetailsArgs.uid))
                     }
                 }
             }
