@@ -4,5 +4,5 @@ import com.mzuch.droidmovie.data.movies.model.MoviesData
 import com.mzuch.droidmovie.network.GenericResponse
 
 interface MovieRemoteSource {
-    suspend fun getMoviesData(): GenericResponse<MoviesData>
+    suspend fun getMoviesData(page: Int = 1): GenericResponse<MoviesData>
 }

@@ -53,7 +53,7 @@ object AppModule {
     fun provideMoviesRepository(api: MovieApi, db: AppDatabase): MovieDataSource {
         val remote = MovieRemote(api)
         val local = MovieLocal(db)
-        return MovieRepo(remote, local)
+        return MovieRepo(remote, local, db)
     }
 
     @Provides

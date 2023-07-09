@@ -4,6 +4,6 @@ import androidx.room.Entity
 
 @Entity
 data class MovieUpdateFavoriteEntity(
-    val uid: Int,
+    val id: Int,
     val isFavorite: Boolean
 )
