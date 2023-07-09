@@ -3,7 +3,7 @@ package com.mzuch.droidmovie.data.movies.repository.local
 import androidx.paging.PagingSource
 import com.mzuch.droidmovie.data.database.AppDatabase
 import com.mzuch.droidmovie.data.movies.model.MovieEntity
-import com.mzuch.droidmovie.data.movies.model.MovieUpdateFavoriteEntity
+import com.mzuch.droidmovie.data.movies.model.MovieFavorite
 import kotlinx.coroutines.flow.Flow
 
 class MovieLocal(private val db: AppDatabase) : MovieLocalSource {
@@ -31,11 +31,19 @@ class MovieLocal(private val db: AppDatabase) : MovieLocalSource {
         return db.movieDao().getAllFavorites()
     }
 
-    override suspend fun updateFavoritesAll(movies: List<MovieUpdateFavoriteEntity>) {
+    override suspend fun updateFavoritesAll(movies: List<MovieFavorite>) {
         return db.movieDao().updateFavoritesAll(movies)
     }
 
     override suspend fun pagingSource(): PagingSource<Int, MovieEntity> {
         return db.movieDao().pagingSource()
+    }
+
+    override suspend fun addFavorite(id: Int) {
+        return db.movieFavoriteDao().insert(MovieFavorite(id))
+    }
+
+    override suspend fun deleteFavorite(id: Int) {
+        return db.movieFavoriteDao().delete(id)
     }
 }

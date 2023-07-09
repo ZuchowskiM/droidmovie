@@ -7,7 +7,6 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.mzuch.droidmovie.data.database.AppDatabase
 import com.mzuch.droidmovie.data.movies.model.MovieEntity
-import com.mzuch.droidmovie.data.movies.model.MovieUpdateFavoriteEntity
 import com.mzuch.droidmovie.data.movies.repository.remote.MovieRemoteSource
 import com.mzuch.droidmovie.network.NetworkResponse
 
@@ -37,14 +36,7 @@ class MovieRemoteMediator(
             is NetworkResponse.Success -> {
                 val isEndOfList = response.body.results.isEmpty()
                 db.withTransaction {
-                    var favorites: List<MovieUpdateFavoriteEntity>? = null
                     if (loadType == LoadType.REFRESH) {
-                        favorites = db.movieDao().getAllFavorites().map {
-                            MovieUpdateFavoriteEntity(
-                                it.id,
-                                it.isFavorite
-                            )
-                        }
                         db.movieDao().deleteAll()
                         db.movieRemoteKeyDao().deleteAll()
                     }
@@ -65,9 +57,10 @@ class MovieRemoteMediator(
                             localSortKey = pageKey * 1000 + (index + 1)
                         )
                     }
+                    val favoriteData = db.movieFavoriteDao().getAllFavorite()
                     db.movieRemoteKeyDao().insertAll(keys)
                     db.movieDao().insertAll(movieModels)
-                    favorites?.let { db.movieDao().updateFavoritesAll(it) }
+                    db.movieDao().updateFavoritesAll(favoriteData)
                 }
 
                 return MediatorResult.Success(endOfPaginationReached = isEndOfList)

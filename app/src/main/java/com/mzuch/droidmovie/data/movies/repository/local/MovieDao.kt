@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.mzuch.droidmovie.data.movies.model.MovieEntity
-import com.mzuch.droidmovie.data.movies.model.MovieUpdateFavoriteEntity
+import com.mzuch.droidmovie.data.movies.model.MovieFavorite
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -31,7 +31,7 @@ interface MovieDao {
     suspend fun getAllFavorites(): List<MovieEntity>
 
     @Update(entity = MovieEntity::class)
-    suspend fun updateFavoritesAll(movies: List<MovieUpdateFavoriteEntity>)
+    suspend fun updateFavoritesAll(movies: List<MovieFavorite>)
 
     @Query("SELECT * FROM MovieEntity ORDER BY localSortKey ASC")
     fun pagingSource(): PagingSource<Int, MovieEntity>

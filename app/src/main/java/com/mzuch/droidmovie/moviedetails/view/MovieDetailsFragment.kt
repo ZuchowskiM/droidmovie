@@ -73,13 +73,13 @@ class MovieDetailsFragment : Fragment() {
             tbMovieDetails.btnFavorite.isChecked = args.movieDetailsArgs.isFavorite
             tbMovieDetails.btnFavorite.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
-                    lifecycleScope.launch {
+                    viewLifecycleOwner.lifecycleScope.launch {
                         viewModel
                             .moviesIntent
                             .send(MoviesIntent.MarkAsFavorite(args.movieDetailsArgs.uid))
                     }
                 } else {
-                    lifecycleScope.launch {
+                    viewLifecycleOwner.lifecycleScope.launch {
                         viewModel
                             .moviesIntent
                             .send(MoviesIntent.UnMarkAsFavorite(args.movieDetailsArgs.uid))

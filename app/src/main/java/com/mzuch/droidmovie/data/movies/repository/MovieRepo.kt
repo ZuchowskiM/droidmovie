@@ -24,6 +24,7 @@ class MovieRepo(
             isFavorite = true
         )
         local.updateMovie(updatedMovie)
+        local.addFavorite(movieUid)
     }
 
     override suspend fun unMarkFavorite(movieUid: Int) {
@@ -32,6 +33,7 @@ class MovieRepo(
             isFavorite = false
         )
         local.updateMovie(updatedMovie)
+        local.deleteFavorite(movieUid)
     }
 
     @OptIn(ExperimentalPagingApi::class)

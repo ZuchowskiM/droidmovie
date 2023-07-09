@@ -2,6 +2,7 @@ package com.mzuch.droidmovie.movies.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.mzuch.droidmovie.data.movies.repository.MovieDataSource
 import com.mzuch.droidmovie.movies.intent.MoviesIntent
 import com.mzuch.droidmovie.movies.viewstate.MoviesState
@@ -19,7 +20,7 @@ class MoviesViewModel @Inject constructor(
 
     val moviesIntent = Channel<MoviesIntent>(Channel.UNLIMITED)
     val moviesEvents = MutableSharedFlow<MoviesState>()
-    val moviesPagedFlow = movieRepo.getMoviesFromPagingMediator()
+    val moviesPagedFlow = movieRepo.getMoviesFromPagingMediator().cachedIn(viewModelScope)
 
     init {
         handleIntent()
@@ -39,7 +40,7 @@ class MoviesViewModel @Inject constructor(
 
     private fun emitError() {
         viewModelScope.launch {
-            moviesEvents.emit(MoviesState.Error(ERROR_MSG))
+            moviesEvents.emit(MoviesState.LoadError)
         }
     }
 
@@ -53,9 +54,5 @@ class MoviesViewModel @Inject constructor(
         viewModelScope.launch {
             movieRepo.unMarkFavorite(movieUid)
         }
-    }
-
-    private companion object {
-        const val ERROR_MSG = "Ups...something went wrong, check your internet connection"
     }
 }
