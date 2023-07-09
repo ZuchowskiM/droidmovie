@@ -25,7 +25,7 @@ class MovieRemoteMediator(
         state: PagingState<Int, MovieEntity>
     ): MediatorResult {
         val pageKey = when (loadType) {
-            LoadType.REFRESH -> 1
+            LoadType.REFRESH -> MoviePagingConfig.INITIAL_PAGE
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = false)
             LoadType.APPEND -> getLastRemoteKey(state)?.nextKey
                 ?: return MediatorResult.Success(
@@ -40,7 +40,8 @@ class MovieRemoteMediator(
                         db.movieDao().deleteAll()
                         db.movieRemoteKeyDao().deleteAll()
                     }
-                    val prevKey = if (pageKey == 1) null else pageKey - 1
+                    val prevKey =
+                        if (pageKey == MoviePagingConfig.INITIAL_PAGE) null else pageKey - 1
                     val nextKey = if (isEndOfList) null else pageKey + 1
                     val keys = response.body.results.map {
                         MovieRemoteKey(it.id, prevKey = prevKey, nextKey = nextKey)
@@ -54,7 +55,7 @@ class MovieRemoteMediator(
                             result.voteAverage,
                             result.overview.orEmpty(),
                             popularity = result.popularity ?: 0.0,
-                            localSortKey = pageKey * 1000 + (index + 1)
+                            localSortKey = constructSortKey(pageKey, index)
                         )
                     }
                     val favoriteData = db.movieFavoriteDao().getAllFavorite()
@@ -69,6 +70,9 @@ class MovieRemoteMediator(
             else -> return MediatorResult.Error(Exception())
         }
     }
+
+    // TODO make later sortKey that have some dignity
+    private fun constructSortKey(pageKey: Int, index: Int) = pageKey * 1000 + (index + 1)
 
     private suspend fun getLastRemoteKey(state: PagingState<Int, MovieEntity>): MovieRemoteKey? {
         val key = state.pages.lastOrNull { it.data.isNotEmpty() }

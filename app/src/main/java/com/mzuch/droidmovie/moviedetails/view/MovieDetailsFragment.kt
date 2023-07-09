@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
+import com.mzuch.droidmovie.R
 import com.mzuch.droidmovie.databinding.FragmentMovieDetailsBinding
 import com.mzuch.droidmovie.movies.intent.MoviesIntent
 import com.mzuch.droidmovie.movies.viewmodel.MoviesViewModel
@@ -59,7 +60,7 @@ class MovieDetailsFragment : Fragment() {
 
     private fun setupToolbar() {
         binding.run {
-            tbMovieDetails.tvToolbarTitle.text = "Overview"
+            tbMovieDetails.tvToolbarTitle.setText(R.string.overview)
             tbMovieDetails.ibtnBack.isVisible = true
             tbMovieDetails.ibtnBack.setOnClickListener {
                 findNavController().popBackStack()

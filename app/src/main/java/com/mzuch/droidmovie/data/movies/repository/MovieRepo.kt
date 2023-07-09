@@ -5,6 +5,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.mzuch.droidmovie.data.movies.model.MovieEntity
+import com.mzuch.droidmovie.data.movies.paging.MoviePagingConfig
 import com.mzuch.droidmovie.data.movies.paging.MovieRemoteMediator
 import com.mzuch.droidmovie.data.movies.repository.local.MovieLocalSource
 import kotlinx.coroutines.flow.Flow
@@ -37,13 +38,12 @@ class MovieRepo(
     override fun getMoviesFromPagingMediator(): Flow<PagingData<MovieEntity>> {
         return Pager(
             config = PagingConfig(
-                pageSize = 20,
-                initialLoadSize = 40,
-                prefetchDistance = 40,
+                pageSize = MoviePagingConfig.PAGE_SIZE,
+                initialLoadSize = MoviePagingConfig.PAGE_SIZE * 2,
+                prefetchDistance = MoviePagingConfig.PAGE_SIZE * 2,
             ),
             remoteMediator = movieRemoteMediator,
             pagingSourceFactory = { local.pagingSource() }
         ).flow
-
     }
 }
