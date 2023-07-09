@@ -7,12 +7,12 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.mzuch.droidmovie.data.database.AppDatabase
 import com.mzuch.droidmovie.data.movies.model.MovieEntity
-import com.mzuch.droidmovie.data.movies.repository.remote.MovieRemoteSource
+import com.mzuch.droidmovie.network.MovieApi
 import com.mzuch.droidmovie.network.NetworkResponse
 
 @OptIn(ExperimentalPagingApi::class)
 class MovieRemoteMediator(
-    private val movieRemote: MovieRemoteSource,
+    private val movieApi: MovieApi,
     private val db: AppDatabase,
 ) : RemoteMediator<Int, MovieEntity>() {
 
@@ -32,7 +32,7 @@ class MovieRemoteMediator(
                     endOfPaginationReached = false
                 )
         }
-        when (val response = movieRemote.getMoviesData(pageKey)) {
+        when (val response = movieApi.getMoviesData(pageKey)) {
             is NetworkResponse.Success -> {
                 val isEndOfList = response.body.results.isEmpty()
                 db.withTransaction {
