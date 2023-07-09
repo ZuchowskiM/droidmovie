@@ -4,17 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
+import com.mzuch.droidmovie.R
 import com.mzuch.droidmovie.databinding.FragmentMoviesBinding
 import com.mzuch.droidmovie.movies.intent.MoviesIntent
 import com.mzuch.droidmovie.movies.viewmodel.MoviesViewModel
 import com.mzuch.droidmovie.movies.viewstate.MoviesState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -22,8 +27,8 @@ class MoviesFragment : Fragment() {
     private var _binding: FragmentMoviesBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MoviesViewModel by viewModels()
-    private val adapter =
-        MovieAdapter(
+    private val pagingAdapter =
+        MoviePagingDataAdapter(
             onClick = {
                 val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailsFragment(it)
                 findNavController().navigate(action)
@@ -59,35 +64,62 @@ class MoviesFragment : Fragment() {
         setupToolbar()
         setupMovieList()
         setupSwipeToRefreshLayout()
+        observeMovies()
+        observeLoadingState()
         observeViewModel()
-        fetchMovies()
     }
 
     private fun setupToolbar() {
-        binding.tbMovieList.tvToolbarTitle.text = "Movies"
+        binding.tbMovieList.tvToolbarTitle.setText(R.string.movies)
     }
 
-    private fun observeViewModel() {
-        lifecycleScope.launch {
+    private fun setupMovieList() {
+        binding.moviesRv.adapter = pagingAdapter.withLoadStateFooter(
+            footer = MovieLoadStateAdapter { pagingAdapter.retry() },
+        )
+    }
+
+    private fun observeLoadingState() {
+        viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.moviesState.collect {
-                    when (it) {
-                        is MoviesState.Error -> {
-                            binding.stfLayMovies.isRefreshing = false
-                        }
-                        is MoviesState.Idle -> {}
-                        is MoviesState.Success -> {
-                            adapter.submitList(it.data)
-                            binding.stfLayMovies.isRefreshing = false
-                        }
+                pagingAdapter.loadStateFlow.collectLatest {
+                    if (it.refresh is LoadState.Error) {
+                        viewModel.moviesIntent.send(MoviesIntent.RefreshError)
                     }
+                    binding.stfLayMovies.isRefreshing = it.refresh is LoadState.Loading
                 }
             }
         }
     }
 
-    private fun setupMovieList() {
-        binding.moviesRv.adapter = adapter
+    private fun observeMovies() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.moviesPagedFlow.collect {
+                    pagingAdapter.submitData(it)
+                }
+            }
+        }
+    }
+
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.moviesEvents.asSharedFlow().collect {
+                    when (it) {
+                        is MoviesState.LoadError -> {
+                            Toast.makeText(
+                                requireContext(),
+                                R.string.movie_load_error,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+
+                        is MoviesState.Idle -> {}
+                    }
+                }
+            }
+        }
     }
 
     private fun setupSwipeToRefreshLayout() {
@@ -96,16 +128,9 @@ class MoviesFragment : Fragment() {
         }
     }
 
-    private fun fetchMovies() {
-        binding.stfLayMovies.post {
-            binding.stfLayMovies.isRefreshing = true
-            onMoviesRefresh()
-        }
-    }
-
     private fun onMoviesRefresh() {
-        lifecycleScope.launch {
-            viewModel.moviesIntent.send(MoviesIntent.FetchData)
+        viewLifecycleOwner.lifecycleScope.launch {
+            pagingAdapter.refresh()
         }
     }
 }

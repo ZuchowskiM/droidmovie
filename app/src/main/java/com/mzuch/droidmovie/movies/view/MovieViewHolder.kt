@@ -12,25 +12,26 @@ class MovieViewHolder(
     private val unMarkFavorite: (Int) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(movie: MovieEntity) {
-        binding.titleTv.text = movie.title
+    fun bind(movie: MovieEntity?) {
+        binding.titleTv.text = movie?.title.orEmpty()
         binding.root.setOnClickListener {
             val args = MovieDetailsArgsData(
-                movie.uid,
-                movie.posterPath ?: "",
-                movie.title,
-                movie.releaseDate,
-                movie.score.toString(),
-                movie.overview,
-                movie.isFavorite,
+                movie?.id ?: 0,
+                movie?.posterPath.orEmpty(),
+                movie?.title.orEmpty(),
+                movie?.releaseDate.orEmpty(),
+                movie?.score.toString(),
+                movie?.overview.orEmpty(),
+                movie?.isFavorite ?: false,
             )
             onClick(args)
         }
-        binding.btnFavorite.isChecked = movie.isFavorite
+        binding.btnFavorite.isChecked = movie?.isFavorite ?: false
         binding.btnFavorite.setOnClickListener {
-            when (movie.isFavorite) {
-                true -> unMarkFavorite(movie.uid)
-                false -> markFavorite(movie.uid)
+            when (movie?.isFavorite) {
+                true -> unMarkFavorite(movie.id)
+                false -> markFavorite(movie.id)
+                null -> {}
             }
         }
     }

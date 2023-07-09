@@ -5,5 +5,7 @@ import com.mzuch.droidmovie.network.GenericResponse
 import com.mzuch.droidmovie.network.MovieApi
 
 class MovieRemote(private val apiService: MovieApi) : MovieRemoteSource {
-    override suspend fun getMoviesData(): GenericResponse<MoviesData> = apiService.getMoviesData()
+    override suspend fun getMoviesData(page: Int): GenericResponse<MoviesData> {
+        return apiService.getMoviesData(page)
+    }
 }
