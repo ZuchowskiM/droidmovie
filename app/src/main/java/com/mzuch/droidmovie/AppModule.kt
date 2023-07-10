@@ -29,7 +29,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideWildfireApi(): MovieApi {
+    fun provideMovieApi(): MovieApi {
         val loggingInterceptor = HttpLoggingInterceptor()
             .setLevel(HttpLoggingInterceptor.Level.BODY)
         val authInterceptor = AuthInterceptor()
