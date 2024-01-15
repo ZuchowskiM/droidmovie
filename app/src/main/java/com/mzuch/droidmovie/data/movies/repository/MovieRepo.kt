@@ -4,11 +4,14 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.mzuch.droidmovie.data.movies.model.MovieEntity
+import androidx.paging.map
+import com.mzuch.droidmovie.data.movies.extension.toDto
+import com.mzuch.droidmovie.data.movies.model.MovieDto
 import com.mzuch.droidmovie.data.movies.paging.MoviePagingConfig
 import com.mzuch.droidmovie.data.movies.paging.MovieRemoteMediator
 import com.mzuch.droidmovie.data.movies.repository.local.MovieLocalSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class MovieRepo(
     private val local: MovieLocalSource,
@@ -35,7 +38,7 @@ class MovieRepo(
     }
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun getMoviesFromPagingMediator(): Flow<PagingData<MovieEntity>> {
+    override fun getMoviesFromPagingMediator(): Flow<PagingData<MovieDto>> {
         return Pager(
             config = PagingConfig(
                 pageSize = MoviePagingConfig.PAGE_SIZE,
@@ -44,6 +47,6 @@ class MovieRepo(
             ),
             remoteMediator = movieRemoteMediator,
             pagingSourceFactory = { local.pagingSource() }
-        ).flow
+        ).flow.map { pagingData -> pagingData.map { it.toDto() } }
     }
 }

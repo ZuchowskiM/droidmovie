@@ -1,7 +1,7 @@
 package com.mzuch.droidmovie.movies.view
 
 import androidx.recyclerview.widget.RecyclerView
-import com.mzuch.droidmovie.data.movies.model.MovieEntity
+import com.mzuch.droidmovie.data.movies.model.MovieDto
 import com.mzuch.droidmovie.databinding.ItemMovieBinding
 import com.mzuch.droidmovie.moviedetails.view.MovieDetailsArgsData
 
@@ -12,7 +12,7 @@ class MovieViewHolder(
     private val unMarkFavorite: (Int) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(movie: MovieEntity?) {
+    fun bind(movie: MovieDto?) {
         binding.titleTv.text = movie?.title.orEmpty()
         binding.root.setOnClickListener {
             val args = MovieDetailsArgsData(

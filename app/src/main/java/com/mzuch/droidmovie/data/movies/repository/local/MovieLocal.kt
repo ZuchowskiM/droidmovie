@@ -2,17 +2,20 @@ package com.mzuch.droidmovie.data.movies.repository.local
 
 import androidx.paging.PagingSource
 import com.mzuch.droidmovie.data.database.AppDatabase
+import com.mzuch.droidmovie.data.movies.extension.toDto
+import com.mzuch.droidmovie.data.movies.extension.toEntity
+import com.mzuch.droidmovie.data.movies.model.MovieDto
 import com.mzuch.droidmovie.data.movies.model.MovieEntity
 import com.mzuch.droidmovie.data.movies.model.MovieFavorite
 
 class MovieLocal(private val db: AppDatabase) : MovieLocalSource {
 
-    override suspend fun updateMovie(movie: MovieEntity) {
-        return db.movieDao().update(movie)
+    override suspend fun updateMovie(movie: MovieDto) {
+        return db.movieDao().update(movie.toEntity())
     }
 
-    override suspend fun getMovie(uid: Int): MovieEntity {
-        return db.movieDao().getMovie(uid)
+    override suspend fun getMovie(uid: Int): MovieDto {
+        return db.movieDao().getMovie(uid).toDto()
     }
 
     override fun pagingSource(): PagingSource<Int, MovieEntity> {
