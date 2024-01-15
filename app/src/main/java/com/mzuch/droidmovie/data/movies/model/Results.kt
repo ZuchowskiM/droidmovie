@@ -1,12 +1,11 @@
 package com.mzuch.droidmovie.data.movies.model
 
 import com.google.gson.annotations.SerializedName
-import com.mzuch.droidmovie.utils.Equatable
 
 class Results(
     @SerializedName("id")
     val id: Int
-) : Equatable {
+) {
 
     @SerializedName("adult")
     var adult: Boolean? = null
@@ -49,6 +48,24 @@ class Results(
 
     override fun equals(other: Any?): Boolean {
         if (other !is Results) return false
-        return title == other.title
+        return id == other.id
+    }
+
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + (adult?.hashCode() ?: 0)
+        result = 31 * result + (backdropPath?.hashCode() ?: 0)
+        result = 31 * result + genreIds.hashCode()
+        result = 31 * result + (originalLanguage?.hashCode() ?: 0)
+        result = 31 * result + (originalTitle?.hashCode() ?: 0)
+        result = 31 * result + (overview?.hashCode() ?: 0)
+        result = 31 * result + (popularity?.hashCode() ?: 0)
+        result = 31 * result + (posterPath?.hashCode() ?: 0)
+        result = 31 * result + (releaseDate?.hashCode() ?: 0)
+        result = 31 * result + (title?.hashCode() ?: 0)
+        result = 31 * result + (video?.hashCode() ?: 0)
+        result = 31 * result + (voteAverage?.hashCode() ?: 0)
+        result = 31 * result + (voteCount ?: 0)
+        return result
     }
 }
