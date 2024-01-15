@@ -3,8 +3,8 @@ package com.mzuch.droidmovie.movies.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
-import com.mzuch.droidmovie.data.movies.repository.MovieDataSource
 import com.mzuch.droidmovie.movies.intent.MoviesIntent
+import com.mzuch.droidmovie.movies.usecase.MoviesUseCase
 import com.mzuch.droidmovie.movies.viewstate.MoviesState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -15,12 +15,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MoviesViewModel @Inject constructor(
-    private val movieRepo: MovieDataSource
+    private val moviesUseCase: MoviesUseCase
 ) : ViewModel() {
 
     val moviesIntent = Channel<MoviesIntent>(Channel.UNLIMITED)
     val moviesEvents = MutableSharedFlow<MoviesState>()
-    val moviesPagedFlow = movieRepo.getMoviesFromPagingMediator().cachedIn(viewModelScope)
+    val moviesPagedFlow = moviesUseCase.getMoviesFlow().cachedIn(viewModelScope)
 
     init {
         handleIntent()
@@ -46,13 +46,13 @@ class MoviesViewModel @Inject constructor(
 
     private fun markAsFavorite(movieUid: Int) {
         viewModelScope.launch {
-            movieRepo.markFavorite(movieUid)
+            moviesUseCase.markAsFavorite(movieUid)
         }
     }
 
     private fun unMarkAsFavorite(movieUid: Int) {
         viewModelScope.launch {
-            movieRepo.unMarkFavorite(movieUid)
+            moviesUseCase.unMarkAsFavorite(movieUid)
         }
     }
 }
