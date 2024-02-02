@@ -1,5 +1,6 @@
 package com.mzuch.droidmovie.network
 
+import com.mzuch.droidmovie.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -14,7 +15,6 @@ class AuthInterceptor : Interceptor {
     }
 
     private companion object {
-        const val token =
-            "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkYTUxM2FmNjdlYzY1MDdlMDI0M2MxODMwZjg4NWQ4ZCIsInN1YiI6IjY0YTViYjE5NWE5OTE1MDBhZGY4OGQyZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.HbyGSbxsk4eWbJYaolsoHTu7QuCpazmdrJxM56xu-2c"
+        const val token = BuildConfig.API_KEY
     }
 }
